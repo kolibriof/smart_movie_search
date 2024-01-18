@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { nanoid } from "nanoid";
 import { movieGenres } from "../data/selectValues";
 import { useMemo } from "react";
@@ -9,7 +8,6 @@ import { fetchMovies, setFilterValues } from "../slices/FetchMovieSlice";
 const FilterBar = () => {
 	const { genre, year } = useAppSelector((store) => store.filterValues);
 	const dispatch = useAppDispatch();
-	const compId = nanoid(5);
 	const movieYear = useMemo(() => {
 		let tempArr = [""];
 		let currentYear = new Date().getFullYear();
@@ -27,9 +25,13 @@ const FilterBar = () => {
 			genre,
 			year,
 		};
-		const form = document.getElementById("form-id")!;
-		form.classList.replace("h-[100%]", "h-[25%]");
-		form.classList.add("opacity-50");
+		const wrapper = document.getElementById("form-id")!;
+		const formEl = document.getElementById("form-item")!;
+		wrapper.classList.replace("h-[100%]", "h-[25%]");
+		wrapper.classList.add("opacity-50");
+		const form = formEl.childNodes;
+		//@ts-ignore
+		form.forEach((e) => e.blur());
 		dispatch(fetchMovies(options));
 	};
 	return (
