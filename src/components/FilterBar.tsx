@@ -34,7 +34,7 @@ const FilterBar = () => {
 	};
 	return (
 		<div
-			className='flex justify-center items-center h-[100%] transition-all ease-in-out duration-500'
+			className='flex justify-center items-center h-[100%] transition-all ease-in-out duration-700 focus-within:opacity-100'
 			id='form-id'>
 			<form
 				id='form-item'

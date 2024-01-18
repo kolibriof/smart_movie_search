@@ -7,8 +7,8 @@ const MovieList = () => {
 		<motion.div
 			className='grid md:grid-cols-5 p-5 gap-2 sm:grid-cols-3'
 			key={nanoid(3)}
-			initial={{ opacity: 0, scale: 0 }}
-			animate={{ opacity: 1, scale: 1 }}
+			initial={{ y: "50%", opacity: 0 }}
+			animate={{ y: "0", opacity: 1 }}
 			transition={{ type: "spring", duration: "0.7" }}>
 			{movies.map((i: any) => {
 				return (
