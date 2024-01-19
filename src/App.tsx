@@ -8,7 +8,7 @@ const App = () => {
 	return (
 		<section className='h-[100vh] items-center justify-center overflow-hidden '>
 			<FilterBar />
-			{movies.length > 1 && <MovieList />}
+			{Object.keys(movies).length >= 1 && <MovieList />}
 		</section>
 	);
 };

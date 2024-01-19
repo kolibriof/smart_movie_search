@@ -4,6 +4,7 @@ import axios from "axios";
 interface FetchProps {
 	year: string;
 	genre: string;
+	page?: number;
 }
 
 interface MovieState {
@@ -12,7 +13,10 @@ interface MovieState {
 		year: string;
 	};
 	isLoading: boolean;
-	movies: any[];
+	movies: {
+		[key: number]: any[];
+	};
+	errorMessage: string;
 }
 
 const initialState: MovieState = {
@@ -21,29 +25,33 @@ const initialState: MovieState = {
 		year: "",
 	},
 	isLoading: false,
-	movies: [],
+	movies: {
+		1: [],
+		2: [],
+		3: [],
+	},
+	errorMessage: "",
 };
 
 export const fetchMovies = createAsyncThunk(
 	"movieSlice/fetchMovies",
 	async (props: FetchProps) => {
-		const options = {
-			method: "GET",
-			url: "https://moviesdatabase.p.rapidapi.com/titles",
-			params: {
-				info: "base_info",
-				year: props.year,
-				genre: props.genre,
-			},
-			headers: {
-				"X-RapidAPI-Key": "cad0ebd204mshcf5d9b42bf42294p1d2375jsnee6c5bc84412",
-				"X-RapidAPI-Host": "moviesdatabase.p.rapidapi.com",
-			},
-		};
-
 		try {
-			const response = await axios.request(options);
-			return response.data.results;
+			const response = await axios.request({
+				method: "GET",
+				url: "https://moviesdatabase.p.rapidapi.com/titles",
+				params: {
+					info: "base_info",
+					year: props.year,
+					genre: props.genre,
+					page: props.page || 1,
+				},
+				headers: {
+					"X-RapidAPI-Key": process.env.REACT_APP_FILMS_API_KEY,
+					"X-RapidAPI-Host": "moviesdatabase.p.rapidapi.com",
+				},
+			});
+			return response.data;
 		} catch (error) {
 			console.error(error);
 		}
@@ -79,8 +87,12 @@ export const movieSlice = createSlice({
 			})
 			.addCase(fetchMovies.fulfilled, (state, action) => {
 				state.isLoading = false;
-				state.movies = action.payload;
-				console.log(state.movies);
+				if (action.payload) {
+					let page = parseInt(action.payload.page);
+					state.movies[page] = action.payload.results;
+				} else {
+					state.errorMessage = "Server issue. Please hold on.";
+				}
 			});
 	},
 });
