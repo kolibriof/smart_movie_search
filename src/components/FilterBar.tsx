@@ -1,7 +1,7 @@
 import { nanoid } from "nanoid";
 import { movieGenres } from "../data/selectValues";
 import { useMemo } from "react";
-import { Button, Dropdown } from "flowbite-react";
+import { Button, Dropdown, Label, Radio } from "flowbite-react";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { fetchMovies, setFilterValues } from "../slices/FetchMovieSlice";
 
@@ -48,7 +48,7 @@ const FilterBar = () => {
 					inputMode='text'
 					outline={false}
 					fullSized={false}
-					className='overflow-y-scroll max-h-[25%] '>
+					className='overflow-y-scroll max-h-[25%]'>
 					{movieGenres.map((i: any) => {
 						return (
 							<Dropdown.Item

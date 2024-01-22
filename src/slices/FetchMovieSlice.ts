@@ -17,9 +17,19 @@ interface MovieState {
 		[key: number]: any[];
 	};
 	errorMessage: string;
+	ModalSettings: {
+		opened: boolean;
+		id: string;
+		page: number;
+	};
 }
 
 const initialState: MovieState = {
+	ModalSettings: {
+		opened: false,
+		id: "",
+		page: 1,
+	},
 	filterValues: {
 		genre: "",
 		year: "",
@@ -36,25 +46,29 @@ const initialState: MovieState = {
 export const fetchMovies = createAsyncThunk(
 	"movieSlice/fetchMovies",
 	async (props: FetchProps) => {
-		try {
-			const response = await axios.request({
-				method: "GET",
-				url: "https://moviesdatabase.p.rapidapi.com/titles",
-				params: {
-					info: "base_info",
-					year: props.year,
-					genre: props.genre,
-					page: props.page || 1,
-				},
-				headers: {
-					"X-RapidAPI-Key": process.env.REACT_APP_FILMS_API_KEY,
-					"X-RapidAPI-Host": "moviesdatabase.p.rapidapi.com",
-				},
-			});
-			return response.data;
-		} catch (error) {
-			console.error(error);
+		let tempArr: { [key: number]: [] } = { 1: [], 2: [], 3: [] };
+		for (let i = 1; i <= 3; i++) {
+			try {
+				const response = await axios.request({
+					method: "GET",
+					url: "https://moviesdatabase.p.rapidapi.com/titles",
+					params: {
+						info: "base_info",
+						year: props.year,
+						genre: props.genre,
+						page: i,
+					},
+					headers: {
+						"X-RapidAPI-Key": process.env.REACT_APP_FILMS_API_KEY,
+						"X-RapidAPI-Host": "moviesdatabase.p.rapidapi.com",
+					},
+				});
+				tempArr[i] = response.data.results;
+			} catch (error) {
+				console.error(error);
+			}
 		}
+		return tempArr;
 	},
 );
 
@@ -75,6 +89,14 @@ export const movieSlice = createSlice({
 					break;
 			}
 		},
+		setModalSettings: (state, action) => {
+			if (action.payload) {
+				state.ModalSettings = action.payload;
+			}
+		},
+		closeModal: (state) => {
+			state.ModalSettings.opened = !state.ModalSettings.opened;
+		},
 	},
 	extraReducers(builder) {
 		builder
@@ -88,14 +110,19 @@ export const movieSlice = createSlice({
 			.addCase(fetchMovies.fulfilled, (state, action) => {
 				state.isLoading = false;
 				if (action.payload) {
-					let page = parseInt(action.payload.page);
-					state.movies[page] = action.payload.results;
+					if (action.payload[1 || 2 || 3].length >= 1) {
+						state.errorMessage = "";
+						state.movies = action.payload;
+					} else {
+						state.errorMessage = "Something went wrong. Please try again.";
+					}
 				} else {
-					state.errorMessage = "Server issue. Please hold on.";
+					state.errorMessage = "Something went wrong. Please try again.";
 				}
 			});
 	},
 });
 
-export const { setFilterValues } = movieSlice.actions;
+export const { setFilterValues, setModalSettings, closeModal } =
+	movieSlice.actions;
 export default movieSlice.reducer;
