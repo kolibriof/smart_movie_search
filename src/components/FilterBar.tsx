@@ -1,7 +1,7 @@
 import { nanoid } from "nanoid";
 import { movieGenres } from "../data/selectValues";
 import { useMemo } from "react";
-import { Button, Dropdown, Label, Radio } from "flowbite-react";
+import { Button, Dropdown } from "flowbite-react";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { fetchMovies, setFilterValues } from "../slices/FetchMovieSlice";
 
@@ -27,7 +27,7 @@ const FilterBar = () => {
 		};
 		const wrapper = document.getElementById("form-id")!;
 		const formEl = document.getElementById("form-item")!;
-		wrapper.classList.replace("h-[100%]", "h-[25%]");
+		wrapper.classList.replace("h-[100%]", "h-[20%]");
 		wrapper.classList.add("opacity-50");
 		const form = formEl.childNodes;
 		//@ts-ignore

@@ -1,9 +1,9 @@
 import { motion } from "framer-motion";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { nanoid } from "nanoid";
-import { Button } from "flowbite-react";
 import { useState } from "react";
 import { setModalSettings } from "../slices/FetchMovieSlice";
+import Buttons from "./Buttons";
 const MovieList = () => {
 	const dispatch = useAppDispatch();
 	const [page, setPage] = useState<number>(1);
@@ -31,9 +31,7 @@ const MovieList = () => {
 		);
 	}
 	return (
-		<motion.section
-			className='flex flex-col justify-center items-center'
-			exit={{ x: "-50%", opacity: 0 }}>
+		<motion.section className='flex flex-col justify-center items-center'>
 			<motion.div
 				className='grid md:grid-cols-5 p-5 gap-2 sm:grid-cols-3 z-0'
 				key={nanoid(3)}
@@ -46,41 +44,26 @@ const MovieList = () => {
 						<motion.div
 							onClick={() => handleModal(i.id)}
 							key={i.id}
-							className='flex flex-col items-center justify-center bg-white p-3 rounded-3xl drop-shadow-lg hover:scale-105 transition-all ease-out duration-300 cursor-pointer hover:z-[999] hover:drop-shadow-2xl'>
+							className='flex flex-col items-center justify-center bg-white p-3 rounded-3xl drop-shadow-lg hover:scale-105 transition-all ease-out duration-300 cursor-pointer hover:z-[999] hover:drop-shadow-2xl min-h-[240px]'>
 							<div className='img flex items-center justify-center flex-grow border-solid border-red-500'>
 								<img
 									className='w-[50%] drop-shadow-lg'
-									src={i.primaryImage ? i.primaryImage.url : ""}
+									src={
+										i.primaryImage
+											? i.primaryImage.url
+											: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019"
+									}
 									alt={i.originalTitleText.text}
 								/>
 							</div>
-							<div className='title flex'>{i.originalTitleText.text}</div>
+							<div className='title flex font-semibold text-center'>
+								{i.originalTitleText.text}
+							</div>
 						</motion.div>
 					);
 				})}
 			</motion.div>
-			<motion.div
-				id='pages'
-				className='flex flex-shrink justify-center items-center gap-2'>
-				<Button
-					onClick={() => {
-						setPage(1);
-					}}>
-					1
-				</Button>
-				<Button
-					onClick={() => {
-						setPage(2);
-					}}>
-					2
-				</Button>
-				<Button
-					onClick={() => {
-						setPage(3);
-					}}>
-					3
-				</Button>
-			</motion.div>
+			<Buttons setPage={setPage} page={page} />
 		</motion.section>
 	);
 };

@@ -1,9 +1,7 @@
-import { motion } from "framer-motion";
 import { useAppDispatch, useAppSelector } from "../hooks";
 
 import Modal from "react-modal";
 import { closeModal } from "../slices/FetchMovieSlice";
-import React from "react";
 
 const ModalView: any = () => {
 	const dispatch = useAppDispatch();
@@ -24,7 +22,7 @@ const ModalView: any = () => {
 				onRequestClose={() => dispatch(closeModal())}
 				shouldCloseOnEsc={true}
 				isOpen={ModalSettings.opened}
-				className='flex flex-col justify-center items-center bg-white h-fit  translate-x-[50%] translate-y-[50%] rounded-2xl !outline-none shadow-2xl p-5 w-1/2 min-h-[50dvh]'>
+				className='flex flex-col justify-center items-center bg-white h-fit  translate-x-[50%] translate-y-[50%] rounded-2xl !outline-none shadow-2xl p-5 w-1/2 md:min-h-[50dvh]'>
 				<div
 					className='absolute right-3 top-2 cursor-pointer bg-red-500 rounded-full p-1 shadow-lg hover:drop-shadow-xl transition-all duration-150 hover:scale-105 ease-out '
 					onClick={() => dispatch(closeModal())}>
@@ -39,22 +37,26 @@ const ModalView: any = () => {
 					.map((i) => {
 						return (
 							<section
-								className='flex flex-col justify-center items-center p-5  min-h-[50dvh] '
+								className='flex flex-col justify-center items-center p-5 min-h-[50dvh] '
 								key={i.id}>
 								<div className='flex'>
 									<h3 className='font-bold text-[1.5rem] pb-5'>
 										{i.titleText.text}
 									</h3>
 								</div>
-								<div className='flex justify-center gap-16 items-center flex-row flex-grow w-full'>
-									<div className='flex max-w-[50%] justify-center'>
+								<div className='flex justify-center md:gap-16 sm:gap-8 items-center md:flex-row sm:flex-col flex-grow w-full'>
+									<div className='flex md:max-w-[50%] sm:max-w-[77%] justify-center'>
 										<img
-											src={i.primaryImage ? i.primaryImage.url : ""}
+											src={
+												i.primaryImage
+													? i.primaryImage.url
+													: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019"
+											}
 											alt={i.titleText.text}
-											className='rounded-lg border-solid border-4 border-black shadow-lg max-w-[60%]'
+											className='rounded-lg border-solid border-4 border-black shadow-lg md:max-w-[60%] sm:max-w-[100%]'
 										/>
 									</div>
-									<div className='flex w-1/2 flex-col'>
+									<div className='flex w-1/2 sm:w-[75%] flex-col justify-'>
 										<div className='flex flex-row gap-2'>
 											<label htmlFor='year' className='font-bold'>
 												Year released:
@@ -65,19 +67,19 @@ const ModalView: any = () => {
 											<label htmlFor='genre' className='font-bold'>
 												Genres:
 											</label>
-											<p
+											<div
 												id='genre'
-												className='inline-flex gap-2 text-white font-semibold'>
+												className='inline-flex gap-2 text-white font-semibold md:whitespace-nowrap overflow-hidden hover:overflow-scroll '>
 												{i.genres.genres.map((i: any) => {
 													return (
-														<p className='bg-slate-400 rounded-md p-1 drop-shadow-lg'>
+														<p className='bg-slate-400 rounded-md p-1 shadow-sm '>
 															{i.text}
 														</p>
 													);
 												})}
-											</p>
+											</div>
 										</div>
-										<div className='flex flex-row gap-2'>
+										<div className='flex flex-row gap-2 sm:w-[100%]'>
 											<label htmlFor='plot' className='font-bold'>
 												Plot:
 											</label>
