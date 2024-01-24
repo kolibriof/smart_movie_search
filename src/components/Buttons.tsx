@@ -1,5 +1,6 @@
 import { Button } from "flowbite-react";
 import { motion } from "framer-motion";
+import { nanoid } from "nanoid";
 
 interface ButtonsProps {
 	setPage: React.Dispatch<React.SetStateAction<number>>;
@@ -15,6 +16,7 @@ const Buttons: React.FC<ButtonsProps> = ({ setPage, page }) => {
 				{Array.from({ length: 3 }, (_, index) => {
 					return (
 						<Button
+							key={nanoid(5)}
 							onClick={() => setPage(index + 1)}
 							className='bg-transparent font-bold'>
 							{index + 1}
