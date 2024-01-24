@@ -14,7 +14,11 @@ const Buttons: React.FC<ButtonsProps> = ({ setPage, page }) => {
 				className='flex flex-shrink justify-center items-center gap-2'>
 				{Array.from({ length: 3 }, (_, index) => {
 					return (
-						<Button onClick={() => setPage(index + 1)}>{index + 1}</Button>
+						<Button
+							onClick={() => setPage(index + 1)}
+							className='bg-transparent font-bold'>
+							{index + 1}
+						</Button>
 					);
 				}).map((el) => {
 					return el;

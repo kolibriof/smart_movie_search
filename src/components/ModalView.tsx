@@ -10,9 +10,10 @@ const ModalView: any = () => {
 	if (ModalSettings.opened && ModalSettings.id) {
 		return (
 			<Modal
+				appElement={document.getElementById("main")!}
 				style={{
 					overlay: {
-						backgroundColor: "rgba(255, 255, 255, 0.9)",
+						backgroundColor: "rgba(255, 255, 255, 0.8)",
 					},
 					content: {
 						animation: "modalAppear 0.3s ease-in-out",
@@ -22,7 +23,7 @@ const ModalView: any = () => {
 				onRequestClose={() => dispatch(closeModal())}
 				shouldCloseOnEsc={true}
 				isOpen={ModalSettings.opened}
-				className='flex flex-col justify-center items-center bg-white h-fit  translate-x-[50%] translate-y-[50%] rounded-2xl !outline-none shadow-2xl p-5 w-1/2 md:min-h-[50dvh]'>
+				className='flex flex-col justify-center items-center bg-white bg-opacity-90 h-fit  translate-x-[50%] translate-y-[50%] rounded-2xl !outline-none shadow-2xl p-5 w-1/2 md:min-h-[50dvh]'>
 				<div
 					className='absolute right-3 top-2 cursor-pointer bg-red-500 rounded-full p-1 shadow-lg hover:drop-shadow-xl transition-all duration-150 hover:scale-105 ease-out '
 					onClick={() => dispatch(closeModal())}>
@@ -53,7 +54,7 @@ const ModalView: any = () => {
 													: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019"
 											}
 											alt={i.titleText.text}
-											className='rounded-lg border-solid border-4 border-black shadow-lg md:max-w-[60%] sm:max-w-[100%]'
+											className='rounded-lg border-solid border-4 border-black border-opacity-20 shadow-lg md:max-w-[60%] sm:max-w-[100%]'
 										/>
 									</div>
 									<div className='flex w-1/2 sm:w-[75%] flex-col justify-'>

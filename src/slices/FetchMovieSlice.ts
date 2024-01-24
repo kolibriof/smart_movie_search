@@ -95,6 +95,8 @@ export const movieSlice = createSlice({
 			}
 		},
 		closeModal: (state) => {
+			const el = document.getElementById("main");
+			el!.style.pointerEvents = "auto";
 			state.ModalSettings.opened = !state.ModalSettings.opened;
 		},
 	},
