@@ -29,12 +29,12 @@
 	}
 }
 
-.featured-movie-img {
+/* .featured-movie-img {
 	animation: featured-movie-img 0.5s ease-out;
 }
 .featured-movie-description {
 	animation: featured-movie-description 0.5s ease-out;
-}
+} */
 .header-appearance {
 	animation: header-appearance 0.5s ease-out;
 }

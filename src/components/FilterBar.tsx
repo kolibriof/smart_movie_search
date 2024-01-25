@@ -1,17 +1,16 @@
-import { nanoid } from "nanoid";
 import { movieGenres } from "../data/selectValues";
 import { useMemo } from "react";
-import { Button, Dropdown } from "flowbite-react";
+import { Button } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { fetchMovies, setFilterValues } from "../slices/FetchMovieSlice";
-import { motion } from "framer-motion";
-import InformationComponent from "./InformationComponent";
+import { AnimatePresence, motion } from "framer-motion";
+import Autocomplete from "@mui/material/Autocomplete";
+import TextField from "@mui/material/TextField";
+import { nanoid } from "nanoid";
 
 const FilterBar = () => {
 	const { genre, year } = useAppSelector((store) => store.filterValues);
 	const movies = useAppSelector((store) => store.movies);
-	const isLoading = useAppSelector((store) => store.isLoading);
-	const error = useAppSelector((store) => store.errorMessage);
 	const dispatch = useAppDispatch();
 	const movieYear = useMemo(() => {
 		let tempArr = [""];
@@ -21,7 +20,7 @@ const FilterBar = () => {
 		}
 		return tempArr;
 	}, []);
-	const handleChosenOption = (type: string, i: string) => {
+	const handleChosenOption = (type: "year" | "genre", i: string) => {
 		dispatch(setFilterValues({ type: type, value: i }));
 	};
 	const handleFetchMovies = (e: React.FormEvent<HTMLFormElement>) => {
@@ -42,63 +41,117 @@ const FilterBar = () => {
 
 	if (movies[1 || 2 || 3].length >= 1) {
 		return (
-			<motion.div className='bg-white flex flex-row items-center bg-opacity-40 shadow-2xl w-full p-5 box-border min-h-[8%] header-appearance'>
-				<motion.div className='genre w-1/2 flex'>
-					<p className='font-bold text-[2em]'>{genre}</p>
+			<AnimatePresence>
+				<motion.div
+					className='bg-white flex flex-row items-center bg-opacity-30 shadow-2xl w-full p-5 box-border min-h-[8%]'
+					key={nanoid(5)}
+					initial={{ opacity: 0, translateY: "-20%" }}
+					animate={{ opacity: 1, translateY: "0" }}
+					transition={{ duration: 1, type: "spring" }}>
+					<motion.div className='genre w-1/2 flex'>
+						<p className='font-bold text-[2em]'>{genre}</p>
+					</motion.div>
+					<motion.div className='year w-1/2 flex justify-end'>
+						<h2 className='font-bold text-[2em]'>{year}</h2>
+					</motion.div>
 				</motion.div>
-				<motion.div className='year w-1/2 flex justify-end'>
-					<h2 className='font-bold text-[2em]'>{year}</h2>
-				</motion.div>
-			</motion.div>
+			</AnimatePresence>
 		);
 	} else {
 		return (
 			<motion.div
+				initial={{ opacity: 1 }}
 				exit={{ opacity: 0 }}
 				transition={{ duration: 500, type: "spring" }}
-				className='flex justify-center items-center h-[100%] transition-all ease-in-out duration-700 focus-within:opacity-100 z-50'
+				className='flex flex-col justify-center items-center h-[100%] transition-all ease-in-out duration-700 focus-within:opacity-100 z-50'
 				id='form-id'>
 				<form
 					id='form-item'
-					className='flex items-center justify-center gap-2'
+					className='flex items-center justify-center gap-2  bg-white bg-opacity-20 p-10 border-4 border-white border-opacity-40 rounded-lg '
 					onSubmit={(e) => handleFetchMovies(e)}>
-					<Dropdown
-						id='genre-dropdown'
-						label={genre || "Select movie genre"}
-						inputMode='text'
-						outline={false}
-						fullSized={false}
-						className='overflow-y-scroll max-h-[25%] '>
-						{movieGenres.map((i: any) => {
-							return (
-								<Dropdown.Item
-									value={i}
-									key={nanoid(3)}
-									onClick={() => handleChosenOption("genre", i)}>
-									{i}
-								</Dropdown.Item>
-							);
-						})}
-					</Dropdown>
-					<Dropdown
-						id='year-dropdown'
-						label={year || "Choose a year"}
-						className='overflow-y-scroll max-h-[25%] '
-						theme={{
-							content: "shadow-2xl",
+					<Autocomplete
+						disablePortal
+						color='white'
+						id='genre-autocomplete'
+						options={movieGenres}
+						sx={{
+							outline: 0,
+							width: 300,
+							border: "2px solid white",
+							color: "white",
+							borderRadius: "5px",
+							"& .MuiOutlinedInput-notchedOutline": {
+								border: "none",
+							},
+							"& .MuiFormLabel-root": {
+								color: "white",
+							},
+							"& .MuiSvgIcon-root": {
+								color: "white",
+							},
+						}}
+						onInputChange={(_, newValue) =>
+							handleChosenOption("genre", newValue!)
+						}
+						renderInput={(params) => (
+							<TextField
+								{...params}
+								label='Genres'
+								className='text-white'
+								placeholder='Please choose a genre...'
+							/>
+						)}
+					/>
+					<Autocomplete
+						disablePortal
+						color='white'
+						id='genre-autocomplete'
+						options={movieYear}
+						sx={{
+							outline: 0,
+							width: 300,
+							border: "2px solid white",
+							color: "white",
+							borderRadius: "5px",
+							"& .MuiOutlinedInput-notchedOutline": {
+								border: "none",
+							},
+							"& .MuiFormLabel-root": {
+								color: "white",
+							},
+							"& .MuiSvgIcon-root": {
+								color: "white",
+							},
+						}}
+						onInputChange={(_, newValue) =>
+							handleChosenOption("year", newValue!)
+						}
+						renderInput={(params) => (
+							<TextField
+								{...params}
+								label='Year'
+								placeholder='Please choose a genre...'
+							/>
+						)}
+					/>
+
+					<Button
+						type='submit'
+						variant='contained'
+						sx={{
+							boxSizing: "border-box",
+							height: 60,
+							color: "black",
+							bgcolor: "white",
+							opacity: 0.9,
+							border: "2px solid white",
+							":hover": {
+								bgcolor: "white",
+								opacity: 1,
+							},
 						}}>
-						{movieYear.map((i) => {
-							return (
-								<Dropdown.Item
-									value={i}
-									key={nanoid(3)}
-									onClick={() => handleChosenOption("year", i)}>
-									{i}
-								</Dropdown.Item>
-							);
-						})}
-					</Dropdown>
-					<Button type='submit'>Search!</Button>
+						Search!
+					</Button>
 				</form>
 			</motion.div>
 		);

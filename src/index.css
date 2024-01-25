@@ -19,3 +19,11 @@ body {
 		rgba(176, 50, 50, 1) 100%
 	);
 }
+
+.css-1jy569b-MuiFormLabel-root-MuiInputLabel-root.Mui-focused {
+	color: white !important;
+}
+input[type="text"] {
+	--tw-ring-color: "" !important;
+	color: white;
+}

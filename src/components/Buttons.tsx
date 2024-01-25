@@ -1,4 +1,4 @@
-import { Button } from "flowbite-react";
+import { Button } from "@mui/material";
 import { motion } from "framer-motion";
 import { nanoid } from "nanoid";
 
@@ -12,10 +12,17 @@ const Buttons: React.FC<ButtonsProps> = ({ setPage, page }) => {
 		<div>
 			<motion.div
 				id='pages'
-				className='flex flex-shrink justify-center items-center gap-2'>
+				className='flex flex-shrink justify-center items-center gap-2 p-2 '>
 				{Array.from({ length: 3 }, (_, index) => {
 					return (
 						<Button
+							sx={{
+								color: "white",
+								":hover": {
+									bgcolor: "white",
+									color: "black",
+								},
+							}}
 							key={nanoid(5)}
 							onClick={() => setPage(index + 1)}
 							className='bg-transparent font-bold'>

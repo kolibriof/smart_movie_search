@@ -1,5 +1,4 @@
 import { useAppDispatch, useAppSelector } from "../hooks";
-
 import Modal from "react-modal";
 import { closeModal } from "../slices/FetchMovieSlice";
 
