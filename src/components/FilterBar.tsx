@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { Button } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { fetchMovies, setFilterValues } from "../slices/FetchMovieSlice";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import { nanoid } from "nanoid";
@@ -11,6 +11,8 @@ import { nanoid } from "nanoid";
 const FilterBar = () => {
 	const { genre, year } = useAppSelector((store) => store.filterValues);
 	const movies = useAppSelector((store) => store.movies);
+	const modal = useAppSelector((store) => store.ModalSettings);
+
 	const dispatch = useAppDispatch();
 	const movieYear = useMemo(() => {
 		let tempArr = [""];
@@ -23,6 +25,7 @@ const FilterBar = () => {
 	const handleChosenOption = (type: "year" | "genre", i: string) => {
 		dispatch(setFilterValues({ type: type, value: i }));
 	};
+
 	const handleFetchMovies = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		let options = {
@@ -38,32 +41,15 @@ const FilterBar = () => {
 		form.forEach((e) => e.blur());
 		dispatch(fetchMovies(options));
 	};
-
 	if (movies[1 || 2 || 3].length >= 1) {
-		return (
-			<AnimatePresence>
-				<motion.div
-					className='bg-white flex flex-row items-center bg-opacity-30 shadow-2xl w-full p-5 box-border min-h-[8%]'
-					key={nanoid(5)}
-					initial={{ opacity: 0, translateY: "-20%" }}
-					animate={{ opacity: 1, translateY: "0" }}
-					transition={{ duration: 1, type: "spring" }}>
-					<motion.div className='genre w-1/2 flex'>
-						<p className='font-bold text-[2em]'>{genre}</p>
-					</motion.div>
-					<motion.div className='year w-1/2 flex justify-end'>
-						<h2 className='font-bold text-[2em]'>{year}</h2>
-					</motion.div>
-				</motion.div>
-			</AnimatePresence>
-		);
+		return null;
 	} else {
 		return (
 			<motion.div
-				initial={{ opacity: 1 }}
-				exit={{ opacity: 0 }}
-				transition={{ duration: 500, type: "spring" }}
-				className='flex flex-col justify-center items-center h-[100%] transition-all ease-in-out duration-700 focus-within:opacity-100 z-50'
+				key={nanoid(5)}
+				className={`flex flex-col justify-center items-center h-[100%] transition-all ease-in-out duration-700 focus-within:opacity-100 ${
+					modal.opened ? `z-0` : `z-50`
+				}`}
 				id='form-id'>
 				<form
 					id='form-item'

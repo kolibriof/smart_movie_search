@@ -32,13 +32,13 @@ const MovieList = () => {
 					exit={{ opacity: 0 }}
 					className='flex flex-row overflow-hidden items-center hover:overflow-x-scroll p-5 gap-3 bg-white bg-opacity-10 shadow-2xl movie-list-bg-gradient'
 					id='main'>
-					{movies[page].map((i: any, index) => {
+					{movies[page].map((i: any, _) => {
 						return (
 							<motion.div
 								onClick={() => handleModal(i.id)}
 								key={i.id}
-								className='flex flex-col min-w-[12%] items-center justify-center bg-white bg-opacity-70 p-3 rounded-lg drop-shadow-lg hover:scale-105 transition-all ease-out duration-300 cursor-pointer hover:z-[999] hover:drop-shadow-2xl min-h-[240px] '>
-								<div className='img flex items-center justify-center flex-grow border-solid border-red-500'>
+								className='flex flex-col min-w-[12%] items-center justify-center bg-white bg-opacity-70 p-3 rounded-lg drop-shadow-lg hover:scale-105 transition-all ease-out duration-300 cursor-pointer hover:z-[998] hover:drop-shadow-2xl h-[240px]'>
+								<div className='img flex items-center justify-center flex-grow border-solid border-red-500 max-w-[90%]'>
 									<img
 										className='w-[50%] drop-shadow-lg'
 										src={
@@ -49,7 +49,7 @@ const MovieList = () => {
 										alt={i.originalTitleText.text}
 									/>
 								</div>
-								<div className='title flex font-semibold text-center'>
+								<div className='title flex font-semibold text-center text-ellipsis'>
 									{i.originalTitleText.text}
 								</div>
 							</motion.div>

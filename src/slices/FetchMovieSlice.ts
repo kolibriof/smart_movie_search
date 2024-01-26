@@ -20,7 +20,7 @@ interface MovieState {
 	ModalSettings: {
 		opened: boolean;
 		id: string;
-		page: number;
+		page?: number;
 	};
 }
 
@@ -96,8 +96,13 @@ export const movieSlice = createSlice({
 		},
 		closeModal: (state) => {
 			const el = document.getElementById("main");
-			el!.style.pointerEvents = "auto";
+			if (el) {
+				el.style.pointerEvents = "auto";
+			}
 			state.ModalSettings.opened = !state.ModalSettings.opened;
+		},
+		clearMovies: (state) => {
+			state.movies = { 1: [], 2: [], 3: [] };
 		},
 	},
 	extraReducers(builder) {
@@ -125,6 +130,6 @@ export const movieSlice = createSlice({
 	},
 });
 
-export const { setFilterValues, setModalSettings, closeModal } =
+export const { setFilterValues, setModalSettings, closeModal, clearMovies } =
 	movieSlice.actions;
 export default movieSlice.reducer;

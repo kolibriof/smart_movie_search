@@ -6,7 +6,7 @@ const ModalView: any = () => {
 	const dispatch = useAppDispatch();
 	const movies = useAppSelector((store) => store.movies);
 	const ModalSettings = useAppSelector((store) => store.ModalSettings);
-	if (ModalSettings.opened && ModalSettings.id) {
+	if (ModalSettings.opened && ModalSettings.id && ModalSettings.page) {
 		return (
 			<Modal
 				appElement={document.getElementById("main")!}
@@ -94,6 +94,38 @@ const ModalView: any = () => {
 							</section>
 						);
 					})}
+			</Modal>
+		);
+	}
+	if (ModalSettings.id === "about" && ModalSettings.opened) {
+		return (
+			<Modal
+				appElement={document.getElementById("main")!}
+				style={{
+					overlay: {
+						backgroundColor: "rgba(255, 255, 255, 0.8)",
+					},
+					content: {
+						animation: "modalAppear 0.3s ease-in-out",
+					},
+				}}
+				shouldCloseOnOverlayClick={true}
+				onRequestClose={() => dispatch(closeModal())}
+				shouldCloseOnEsc={true}
+				isOpen={ModalSettings.opened}
+				className='flex flex-col justify-center items-center bg-white bg-opacity-90 h-fit  translate-x-[50%] translate-y-[50%] rounded-2xl !outline-none shadow-2xl p-5 w-1/2 md:min-h-[50dvh]'>
+				<div
+					className='absolute right-3 top-2 cursor-pointer bg-red-500 rounded-full p-1 shadow-lg hover:drop-shadow-xl transition-all duration-150 hover:scale-105 ease-out '
+					onClick={() => dispatch(closeModal())}>
+					<img
+						src='https://img.icons8.com/color/48/cancel--v1.png'
+						alt='close button'
+						className='w-5 '
+					/>
+				</div>
+				<div className='bg-black h-80 items-center flex justify-center flex-col w-full text-white text-center bg-opacity-60 border-4 border-white shadow-xl border-opacity-30 rounded-lg uppercase'>
+					<h1 className='font-bold'>Created by kolibriof</h1>
+				</div>
 			</Modal>
 		);
 	}
