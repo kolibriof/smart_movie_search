@@ -7,7 +7,7 @@ import { nanoid } from "nanoid";
 const MovieList = () => {
 	const dispatch = useAppDispatch();
 	const [page, setPage] = useState<number>(1);
-	const movies = useAppSelector((store) => store.movies);
+	const movies = useAppSelector((store) => store.movieSlice.movies);
 
 	const handleModal = (id: string) => {
 		const el = document.getElementById("main");
@@ -32,7 +32,7 @@ const MovieList = () => {
 					exit={{ opacity: 0 }}
 					className='flex flex-row overflow-hidden items-center hover:overflow-x-scroll p-5 gap-3 bg-white bg-opacity-10 shadow-2xl movie-list-bg-gradient'
 					id='main'>
-					{movies[page].map((i: any, _) => {
+					{movies[page].map((i: any) => {
 						return (
 							<motion.div
 								onClick={() => handleModal(i.id)}

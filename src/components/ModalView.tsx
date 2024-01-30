@@ -1,11 +1,40 @@
 import { useAppDispatch, useAppSelector } from "../hooks";
 import Modal from "react-modal";
 import { closeModal } from "../slices/FetchMovieSlice";
+import { Button, TextField } from "@mui/material";
+import { useState } from "react";
+import {
+	UserCredsProps,
+	createUser,
+	loginUser,
+} from "../slices/FetchUserSlice";
 
 const ModalView: any = () => {
 	const dispatch = useAppDispatch();
-	const movies = useAppSelector((store) => store.movies);
-	const ModalSettings = useAppSelector((store) => store.ModalSettings);
+
+	const [authUser, setAuthUser] = useState<{ email: string; password: string }>(
+		{
+			email: "",
+			password: "",
+		},
+	);
+	const handleAuthSubmit = (
+		event: React.FormEvent<HTMLFormElement>,
+		type: string | "login" | "signup",
+		creds: UserCredsProps,
+	) => {
+		event.preventDefault();
+		if (type === "login") {
+			dispatch(loginUser(creds));
+		}
+		if (type === "signup") {
+			dispatch(createUser(creds));
+		}
+	};
+	const movies = useAppSelector((store) => store.movieSlice.movies);
+	const ModalSettings = useAppSelector(
+		(store) => store.movieSlice.ModalSettings,
+	);
 	if (ModalSettings.opened && ModalSettings.id && ModalSettings.page) {
 		return (
 			<Modal
@@ -97,37 +126,101 @@ const ModalView: any = () => {
 			</Modal>
 		);
 	}
-	if (ModalSettings.id === "about" && ModalSettings.opened) {
-		return (
-			<Modal
-				appElement={document.getElementById("main")!}
-				style={{
-					overlay: {
-						backgroundColor: "rgba(255, 255, 255, 0.8)",
-					},
-					content: {
-						animation: "modalAppear 0.3s ease-in-out",
-					},
-				}}
-				shouldCloseOnOverlayClick={true}
-				onRequestClose={() => dispatch(closeModal())}
-				shouldCloseOnEsc={true}
-				isOpen={ModalSettings.opened}
-				className='flex flex-col justify-center items-center bg-white bg-opacity-90 h-fit  translate-x-[50%] translate-y-[50%] rounded-2xl !outline-none shadow-2xl p-5 w-1/2 md:min-h-[50dvh]'>
-				<div
-					className='absolute right-3 top-2 cursor-pointer bg-red-500 rounded-full p-1 shadow-lg hover:drop-shadow-xl transition-all duration-150 hover:scale-105 ease-out '
-					onClick={() => dispatch(closeModal())}>
-					<img
-						src='https://img.icons8.com/color/48/cancel--v1.png'
-						alt='close button'
-						className='w-5 '
-					/>
-				</div>
-				<div className='bg-black h-80 items-center flex justify-center flex-col w-full text-white text-center bg-opacity-60 border-4 border-white shadow-xl border-opacity-30 rounded-lg uppercase'>
-					<h1 className='font-bold'>Created by kolibriof</h1>
-				</div>
-			</Modal>
-		);
+	if (ModalSettings.opened) {
+		if (ModalSettings.id === "about") {
+			return (
+				<Modal
+					appElement={document.getElementById("main")!}
+					style={{
+						overlay: {
+							backgroundColor: "rgba(255, 255, 255, 0.8)",
+						},
+						content: {
+							animation: "modalAppear 0.3s ease-in-out",
+						},
+					}}
+					shouldCloseOnOverlayClick={true}
+					onRequestClose={() => dispatch(closeModal())}
+					shouldCloseOnEsc={true}
+					isOpen={ModalSettings.opened}
+					className='flex flex-col justify-center items-center bg-white bg-opacity-90 h-fit  translate-x-[50%] translate-y-[50%] rounded-2xl !outline-none shadow-2xl p-5 w-1/2 md:min-h-[50dvh]'>
+					<div className=''>
+						<h1 className='font-bold uppercase'>Created by kolibriof</h1>
+					</div>
+				</Modal>
+			);
+		}
+		if (ModalSettings.id === "signup" || ModalSettings.id === "login") {
+			return (
+				<Modal
+					appElement={document.getElementById("main")!}
+					style={{
+						overlay: {
+							backgroundColor: "rgba(255, 255, 255, 0.8)",
+						},
+						content: {
+							animation: "modalAppear 0.3s ease-in-out",
+						},
+					}}
+					shouldCloseOnOverlayClick={true}
+					onRequestClose={() => dispatch(closeModal())}
+					shouldCloseOnEsc={true}
+					isOpen={ModalSettings.opened}
+					className='flex flex-col justify-center items-center bg-white bg-opacity-90 h-fit  translate-x-[50%] translate-y-[50%] rounded-2xl !outline-none shadow-2xl p-5 w-1/2 md:min-h-[50dvh]'>
+					<div
+						className='absolute right-3 top-2 cursor-pointer bg-red-500 rounded-full p-1 shadow-lg hover:drop-shadow-xl transition-all duration-150 hover:scale-105 ease-out '
+						onClick={() => dispatch(closeModal())}>
+						<img
+							src='https://img.icons8.com/color/48/cancel--v1.png'
+							alt='close button'
+							className='w-5 '
+						/>
+					</div>
+					<section className='flex flex-col justify-center items-center gap-3 w-full'>
+						<header className='flex uppercase'>
+							{ModalSettings.id === "signup"
+								? "Create the account"
+								: "Log in into your account"}
+						</header>
+						<form
+							className='flex flex-col gap-2 w-1/2'
+							onSubmit={(e) => handleAuthSubmit(e, ModalSettings.id, authUser)}>
+							<TextField
+								variant='outlined'
+								value={authUser.email}
+								onChange={(e) => {
+									setAuthUser({ ...authUser, email: e.target.value });
+								}}
+								label='Email'
+								sx={{
+									"& .MuiOutlinedInput-root": {
+										"& fieldset": {
+											borderColor: "black",
+											color: "black",
+										},
+									},
+									"& .MuiInputBase-input": {
+										color: "black",
+									},
+								}}
+							/>
+							<TextField
+								variant='outlined'
+								label='Password'
+								type='password'
+								value={authUser.password}
+								onChange={(e) => {
+									setAuthUser({ ...authUser, password: e.target.value });
+								}}
+							/>
+							<Button variant='outlined' type='submit'>
+								{ModalSettings.id === "signup" ? "Create account" : "Log in"}
+							</Button>
+						</form>
+					</section>
+				</Modal>
+			);
+		}
 	}
 	return;
 };

@@ -9,7 +9,7 @@ import InformationComponent from "./components/InformationComponent";
 import Header from "./components/Header";
 
 const App = () => {
-	const movies = useAppSelector((store) => store.movies);
+	const movies = useAppSelector((store) => store.movieSlice.movies);
 	return (
 		<section className='h-[100svh] items-center sm:overflow-scroll overflow-hidden flex flex-col gap-1'>
 			<Header />

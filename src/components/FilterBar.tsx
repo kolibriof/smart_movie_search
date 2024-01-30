@@ -9,9 +9,11 @@ import TextField from "@mui/material/TextField";
 import { nanoid } from "nanoid";
 
 const FilterBar = () => {
-	const { genre, year } = useAppSelector((store) => store.filterValues);
-	const movies = useAppSelector((store) => store.movies);
-	const modal = useAppSelector((store) => store.ModalSettings);
+	const { genre, year } = useAppSelector(
+		(store) => store.movieSlice.filterValues,
+	);
+	const movies = useAppSelector((store) => store.movieSlice.movies);
+	const modal = useAppSelector((store) => store.movieSlice.ModalSettings);
 
 	const dispatch = useAppDispatch();
 	const movieYear = useMemo(() => {

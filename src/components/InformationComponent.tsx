@@ -1,8 +1,8 @@
 import { useAppSelector } from "../hooks";
 
 const InformationComponent = () => {
-	const isLoading = useAppSelector((store) => store.isLoading);
-	const errorMessage = useAppSelector((store) => store.errorMessage);
+	const isLoading = useAppSelector((store) => store.movieSlice.isLoading);
+	const errorMessage = useAppSelector((store) => store.movieSlice.errorMessage);
 	if (isLoading) {
 		return (
 			<div className='text-white flex justify-center text-[32px] items-center'>

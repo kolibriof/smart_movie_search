@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { nanoid } from "nanoid";
 
 const FeaturedMovie = () => {
-	const movies = useAppSelector((store) => store.movies);
+	const movies = useAppSelector((store) => store.movieSlice.movies);
 	const [featuredMovie, setFeaturedMovie] = useState<any>(randomTitle());
 
 	function randomTitle() {
