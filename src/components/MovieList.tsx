@@ -4,6 +4,7 @@ import { useState } from "react";
 import { setModalSettings } from "../slices/FetchMovieSlice";
 import Buttons from "./Buttons";
 import { nanoid } from "nanoid";
+import { addFavFilm, addLikedFilm } from "../slices/FetchUserSlice";
 const MovieList = () => {
 	const dispatch = useAppDispatch();
 	const [page, setPage] = useState<number>(1);

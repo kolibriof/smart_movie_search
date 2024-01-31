@@ -5,30 +5,69 @@ import { Button, TextField } from "@mui/material";
 import { useState } from "react";
 import {
 	UserCredsProps,
+	addFavFilm,
+	addLikedFilm,
 	createUser,
 	loginUser,
+	readDB,
 } from "../slices/FetchUserSlice";
+import { AnimatePresence, motion } from "framer-motion";
 
 const ModalView: any = () => {
+	Modal.setAppElement("#root");
 	const dispatch = useAppDispatch();
-
+	const { errorMessage, currentUser } = useAppSelector(
+		(store) => store.userSlice,
+	);
 	const [authUser, setAuthUser] = useState<{ email: string; password: string }>(
 		{
 			email: "",
 			password: "",
 		},
 	);
-	const handleAuthSubmit = (
+	const markFilm = (type: "liked" | "fav", id: string) => {
+		let tempSettings = {
+			filmID: id,
+			userID: currentUser[0].id || "",
+		};
+		if (type === "liked") {
+			dispatch(addLikedFilm(tempSettings));
+		}
+		if (type === "fav") {
+			dispatch(addFavFilm(tempSettings));
+		}
+	};
+	const handleAuthSubmit = async (
 		event: React.FormEvent<HTMLFormElement>,
 		type: string | "login" | "signup",
 		creds: UserCredsProps,
 	) => {
 		event.preventDefault();
 		if (type === "login") {
-			dispatch(loginUser(creds));
+			try {
+				const success: any = await dispatch(loginUser(creds));
+				if (!success.payload.id) {
+					return;
+				} else {
+					dispatch(readDB(success.payload.id));
+					dispatch(closeModal());
+				}
+			} catch (error) {
+				console.log("Credentials error.");
+			}
 		}
 		if (type === "signup") {
-			dispatch(createUser(creds));
+			try {
+				const success: any = await dispatch(createUser(creds));
+				if (!success.payload.id) {
+					return;
+				} else {
+					dispatch(readDB(success.payload.id));
+					dispatch(closeModal());
+				}
+			} catch (error) {
+				console.log("Credentials error.");
+			}
 		}
 	};
 	const movies = useAppSelector((store) => store.movieSlice.movies);
@@ -52,6 +91,18 @@ const ModalView: any = () => {
 				shouldCloseOnEsc={true}
 				isOpen={ModalSettings.opened}
 				className='flex flex-col justify-center items-center bg-white bg-opacity-90 h-fit  translate-x-[50%] translate-y-[50%] rounded-2xl !outline-none shadow-2xl p-5 w-1/2 md:min-h-[50dvh]'>
+				{currentUser[0].id && (
+					<div className='absolute right-2 top-10'>
+						<div className='flex flex-col p-1 gap-2'>
+							<button onClick={() => markFilm("fav", ModalSettings.id)}>
+								FAV
+							</button>
+							<button onClick={() => markFilm("liked", ModalSettings.id)}>
+								LIKE
+							</button>
+						</div>
+					</div>
+				)}
 				<div
 					className='absolute right-3 top-2 cursor-pointer bg-red-500 rounded-full p-1 shadow-lg hover:drop-shadow-xl transition-all duration-150 hover:scale-105 ease-out '
 					onClick={() => dispatch(closeModal())}>
@@ -164,7 +215,7 @@ const ModalView: any = () => {
 					}}
 					shouldCloseOnOverlayClick={true}
 					onRequestClose={() => dispatch(closeModal())}
-					shouldCloseOnEsc={true}
+					shouldCloseOnEsc={false}
 					isOpen={ModalSettings.opened}
 					className='flex flex-col justify-center items-center bg-white bg-opacity-90 h-fit  translate-x-[50%] translate-y-[50%] rounded-2xl !outline-none shadow-2xl p-5 w-1/2 md:min-h-[50dvh]'>
 					<div
@@ -217,6 +268,17 @@ const ModalView: any = () => {
 								{ModalSettings.id === "signup" ? "Create account" : "Log in"}
 							</Button>
 						</form>
+						<AnimatePresence mode='wait'>
+							{errorMessage && (
+								<motion.div
+									className='flex justify-center items-center text-red-500 font-semibold'
+									initial={{ y: -100, opacity: 0 }}
+									animate={{ y: 0, opacity: 1 }}
+									exit={{ y: -100, opacity: 0 }}>
+									<motion.p>{errorMessage}</motion.p>
+								</motion.div>
+							)}
+						</AnimatePresence>
 					</section>
 				</Modal>
 			);

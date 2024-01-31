@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from "../hooks";
 import { useNavigate } from "react-router";
 import { clearMovies, setModalSettings } from "../slices/FetchMovieSlice";
 import { useState } from "react";
+import { SignOutUser } from "../slices/FetchUserSlice";
 
 const Header = () => {
 	const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
@@ -85,6 +86,20 @@ const Header = () => {
 									/>
 									<p className='pb-1 flex w-1/2 justify-center '>About</p>
 								</motion.div>
+								{user.currentUser[0].id && (
+									<motion.div
+										className='cursor-pointer flex flex-row items-center justify-center bg-black text-white rounded-md  hover:invert'
+										onClick={() => NavigateHandler("markedFilms")}>
+										<img
+											className='w-[10%] invert flex '
+											src='https://img.icons8.com/sf-regular/48/info.png'
+											alt='about'
+										/>
+										<p className='pb-1 flex w-1/2 justify-center '>
+											Your Films
+										</p>
+									</motion.div>
+								)}
 							</motion.div>
 						</motion.section>
 						<motion.footer className='flex flex-col items-center justify-end w-full p-5 text-[1.5em] gap-2 uppercase'>
@@ -112,10 +127,22 @@ const Header = () => {
 									</motion.div>{" "}
 								</>
 							) : (
-								<motion.div className='flex justify-center items-center flex-col'>
-									<h1 className='flex'>Logged in as:</h1>
-									<p className='flex'>{user.currentUser[0].email}</p>
-								</motion.div>
+								<>
+									<motion.div className='flex justify-center items-center flex-col'>
+										<h1 className='flex'>Logged in as:</h1>
+										<p className='flex'>{user.currentUser[0].email}</p>
+									</motion.div>
+									<motion.div
+										className='cursor-pointer flex flex-row items-center bg-black text-white rounded-md justify-center hover:invert w-full '
+										onClick={() => dispatch(SignOutUser())}>
+										<img
+											className='w-[10%] invert flex '
+											src='https://img.icons8.com/sf-regular/48/enter-2.png'
+											alt='log in'
+										/>
+										<p className='pb-1 flex w-1/2 justify-center'>Log out</p>
+									</motion.div>
+								</>
 							)}
 						</motion.footer>
 					</motion.section>
