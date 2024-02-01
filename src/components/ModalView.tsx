@@ -2,7 +2,8 @@ import { useAppDispatch, useAppSelector } from "../hooks";
 import Modal from "react-modal";
 import { closeModal } from "../slices/FetchMovieSlice";
 import { Button, TextField } from "@mui/material";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { toast } from "react-toastify";
 import {
 	UserCredsProps,
 	addFavFilm,
@@ -12,9 +13,25 @@ import {
 	readDB,
 } from "../slices/FetchUserSlice";
 import { AnimatePresence, motion } from "framer-motion";
+import { HeaderContext } from "../context/HeaderContext";
 
 const ModalView: any = () => {
+	const CheckForMarkedMovies = (type: "fav" | "liked", movieID: string) => {
+		switch (type) {
+			case "fav":
+				if (currentUser[0].favFilms.includes(movieID)) {
+					return "bg-red-500";
+				}
+				return null;
+			case "liked":
+				if (currentUser[0].likedFilms.includes(movieID)) {
+					return "bg-green-500";
+				}
+				return null;
+		}
+	};
 	Modal.setAppElement("#root");
+	const { setIsMenuOpen } = useContext(HeaderContext);
 	const dispatch = useAppDispatch();
 	const { errorMessage, currentUser } = useAppSelector(
 		(store) => store.userSlice,
@@ -25,16 +42,31 @@ const ModalView: any = () => {
 			password: "",
 		},
 	);
-	const markFilm = (type: "liked" | "fav", id: string) => {
+
+	const markFilm = async (type: "liked" | "fav", id: string) => {
 		let tempSettings = {
 			filmID: id,
 			userID: currentUser[0].id || "",
 		};
 		if (type === "liked") {
-			dispatch(addLikedFilm(tempSettings));
+			if (!currentUser[0].likedFilms.includes(id)) {
+				await dispatch(addLikedFilm(tempSettings)).then(async () => {
+					dispatch(readDB(currentUser[0].id));
+				});
+				toast.success("Movie has been liked");
+			} else {
+				toast.error("Movie is already liked");
+			}
 		}
 		if (type === "fav") {
-			dispatch(addFavFilm(tempSettings));
+			if (!currentUser[0].favFilms.includes(id)) {
+				await dispatch(addFavFilm(tempSettings)).then(async () => {
+					dispatch(readDB(currentUser[0].id));
+				});
+				toast.success("Movie has been added to favourites");
+			} else {
+				toast.error("Movie is already added to favourites");
+			}
 		}
 	};
 	const handleAuthSubmit = async (
@@ -51,6 +83,8 @@ const ModalView: any = () => {
 				} else {
 					dispatch(readDB(success.payload.id));
 					dispatch(closeModal());
+					toast.success("Successfully logged in!");
+					setIsMenuOpen(false);
 				}
 			} catch (error) {
 				console.log("Credentials error.");
@@ -92,14 +126,26 @@ const ModalView: any = () => {
 				isOpen={ModalSettings.opened}
 				className='flex flex-col justify-center items-center bg-white bg-opacity-90 h-fit  translate-x-[50%] translate-y-[50%] rounded-2xl !outline-none shadow-2xl p-5 w-1/2 md:min-h-[50dvh]'>
 				{currentUser[0].id && (
-					<div className='absolute right-2 top-10'>
-						<div className='flex flex-col p-1 gap-2'>
-							<button onClick={() => markFilm("fav", ModalSettings.id)}>
-								FAV
-							</button>
-							<button onClick={() => markFilm("liked", ModalSettings.id)}>
-								LIKE
-							</button>
+					<div className='absolute left-2 top-2'>
+						<div className='flex flex-row gap-2'>
+							<img
+								onClick={() => markFilm("fav", ModalSettings.id)}
+								className={`w-[25%] h-[25%] bg-opacity-50 rounded-full p-1 cursor-pointer hover:scale-105 shadow-xl ${CheckForMarkedMovies(
+									"fav",
+									ModalSettings.id,
+								)} border-red-500 border-2`}
+								src='https://img.icons8.com/sf-regular/48/hearts.png'
+								alt='favourite'
+							/>
+							<img
+								onClick={() => markFilm("liked", ModalSettings.id)}
+								className={`w-[25%] h-[25%] bg-opacity-50 rounded-full p-1 cursor-pointer hover:scale-105 ${CheckForMarkedMovies(
+									"liked",
+									ModalSettings.id,
+								)} border-green-500 border-2 shadow-xl`}
+								src='https://img.icons8.com/sf-regular/48/facebook-like.png'
+								alt='like'
+							/>
 						</div>
 					</div>
 				)}
@@ -195,6 +241,15 @@ const ModalView: any = () => {
 					shouldCloseOnEsc={true}
 					isOpen={ModalSettings.opened}
 					className='flex flex-col justify-center items-center bg-white bg-opacity-90 h-fit  translate-x-[50%] translate-y-[50%] rounded-2xl !outline-none shadow-2xl p-5 w-1/2 md:min-h-[50dvh]'>
+					<div
+						className='absolute right-3 top-2 cursor-pointer bg-red-500 rounded-full p-1 shadow-lg hover:drop-shadow-xl transition-all duration-150 hover:scale-105 ease-out '
+						onClick={() => dispatch(closeModal())}>
+						<img
+							src='https://img.icons8.com/color/48/cancel--v1.png'
+							alt='close button'
+							className='w-5 '
+						/>
+					</div>
 					<div className=''>
 						<h1 className='font-bold uppercase'>Created by kolibriof</h1>
 					</div>

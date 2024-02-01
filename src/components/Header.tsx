@@ -1,27 +1,40 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { nanoid } from "nanoid";
 import { useAppDispatch, useAppSelector } from "../hooks";
-import { useNavigate } from "react-router";
+import { Outlet, useNavigate } from "react-router";
 import { clearMovies, setModalSettings } from "../slices/FetchMovieSlice";
-import { useState } from "react";
+import { useContext } from "react";
 import { SignOutUser } from "../slices/FetchUserSlice";
+import { HeaderContext } from "../context/HeaderContext";
+import { toast } from "react-toastify";
 
 const Header = () => {
-	const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+	const { isMenuOpen, setIsMenuOpen } = useContext(HeaderContext);
 	const user = useAppSelector((store) => store.userSlice);
 	const dispatch = useAppDispatch();
+	const { RefreshMarkedMovies } = useContext(HeaderContext);
 	const navigate = useNavigate();
+	const NavigateHandler = (path: string) => {
+		if (path === "markedFilms") {
+			RefreshMarkedMovies();
+		}
+		if (path === "/") {
+			dispatch(clearMovies());
+		}
+		setIsMenuOpen(false);
+		navigate(path);
+	};
+	const handleLogOut = () => {
+		dispatch(SignOutUser());
+		setIsMenuOpen(false);
+		NavigateHandler("/");
+		toast.success("Successfully logged out!");
+	};
 	const HandleModalOpen = (id: string) => {
 		let settings = { id: id, opened: true };
 		dispatch(setModalSettings(settings));
 	};
-	const NavigateHandler = (path: string) => {
-		if (path === "/") {
-			setIsMenuOpen(!isMenuOpen);
-			dispatch(clearMovies());
-		}
-		navigate(path);
-	};
+
 	return (
 		<AnimatePresence>
 			<motion.div className='bg-white flex flex-row items-center bg-opacity-30 shadow-2xl w-full p-5 box-border min-h-[8%]'>
@@ -33,14 +46,6 @@ const Header = () => {
 						alt='menu icon'
 					/>
 				</motion.div>
-				{/* <motion.div className='flex flex-row justify-end w-full gap-2'>
-					<motion.div className='genre flex'>
-						<p className='font-bold text-[2em] uppercase'>{genre || ""}</p>
-					</motion.div>
-					<motion.div className='year flex '>
-						<h2 className='font-bold text-[2em]'>{year || ""}</h2>
-					</motion.div>
-				</motion.div> */}
 			</motion.div>
 			{isMenuOpen && (
 				<motion.menu
@@ -71,10 +76,10 @@ const Header = () => {
 									onClick={() => NavigateHandler("/")}>
 									<img
 										className='w-[10%] invert'
-										src='https://img.icons8.com/sf-regular/48/exterior.png'
+										src='https://img.icons8.com/sf-regular/48/search.png'
 										alt='home'
 									/>
-									<p className='pb-1 flex w-1/2 justify-center'>Home</p>
+									<p className='pb-1 flex w-1/2 justify-center'>Search</p>
 								</motion.div>
 								<motion.div
 									className='cursor-pointer flex flex-row items-center justify-center bg-black text-white rounded-md  hover:invert'
@@ -92,12 +97,10 @@ const Header = () => {
 										onClick={() => NavigateHandler("markedFilms")}>
 										<img
 											className='w-[10%] invert flex '
-											src='https://img.icons8.com/sf-regular/48/info.png'
+											src='https://img.icons8.com/sf-regular/48/movie.png'
 											alt='about'
 										/>
-										<p className='pb-1 flex w-1/2 justify-center '>
-											Your Films
-										</p>
+										<p className='pb-1 flex w-1/2 justify-center '>Movies</p>
 									</motion.div>
 								)}
 							</motion.div>
@@ -107,7 +110,10 @@ const Header = () => {
 								<>
 									<motion.div
 										className='cursor-pointer flex flex-row items-center bg-black text-white rounded-md justify-center  hover:invert w-full'
-										onClick={() => HandleModalOpen("signup")}>
+										onClick={() => {
+											HandleModalOpen("signup");
+											setIsMenuOpen(false);
+										}}>
 										<img
 											className='w-[10%] invert flex '
 											src='https://img.icons8.com/sf-regular/48/add-user-male.png'
@@ -117,14 +123,17 @@ const Header = () => {
 									</motion.div>
 									<motion.div
 										className='cursor-pointer flex flex-row items-center bg-black text-white rounded-md justify-center hover:invert w-full '
-										onClick={() => HandleModalOpen("login")}>
+										onClick={() => {
+											HandleModalOpen("login");
+											setIsMenuOpen(false);
+										}}>
 										<img
 											className='w-[10%] invert flex '
 											src='https://img.icons8.com/sf-regular/48/enter-2.png'
 											alt='log in'
 										/>
 										<p className='pb-1 flex w-1/2 justify-center'>Log in</p>
-									</motion.div>{" "}
+									</motion.div>
 								</>
 							) : (
 								<>
@@ -134,10 +143,10 @@ const Header = () => {
 									</motion.div>
 									<motion.div
 										className='cursor-pointer flex flex-row items-center bg-black text-white rounded-md justify-center hover:invert w-full '
-										onClick={() => dispatch(SignOutUser())}>
+										onClick={() => handleLogOut()}>
 										<img
 											className='w-[10%] invert flex '
-											src='https://img.icons8.com/sf-regular/48/enter-2.png'
+											src='https://img.icons8.com/sf-regular/48/exit.png'
 											alt='log in'
 										/>
 										<p className='pb-1 flex w-1/2 justify-center'>Log out</p>
@@ -148,6 +157,7 @@ const Header = () => {
 					</motion.section>
 				</motion.menu>
 			)}
+			<Outlet />
 		</AnimatePresence>
 	);
 };

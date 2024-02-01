@@ -1,23 +1,14 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useAppDispatch, useAppSelector } from "../hooks";
-import { useState } from "react";
-import { setModalSettings } from "../slices/FetchMovieSlice";
+import { useAppSelector } from "../hooks";
+import { useContext } from "react";
+
 import Buttons from "./Buttons";
 import { nanoid } from "nanoid";
-import { addFavFilm, addLikedFilm } from "../slices/FetchUserSlice";
-const MovieList = () => {
-	const dispatch = useAppDispatch();
-	const [page, setPage] = useState<number>(1);
-	const movies = useAppSelector((store) => store.movieSlice.movies);
+import { HeaderContext } from "../context/HeaderContext";
 
-	const handleModal = (id: string) => {
-		const el = document.getElementById("main");
-		if (id) {
-			el!.style.pointerEvents = "none";
-			let tempSettings = { id: id, opened: true, page: page };
-			dispatch(setModalSettings(tempSettings));
-		}
-	};
+const MovieList = () => {
+	const movies = useAppSelector((store) => store.movieSlice.movies);
+	const { handleModal, page, setPage } = useContext(HeaderContext);
 
 	return (
 		<motion.section className='flex flex-col items-center w-[100%] h-[100%] justify-end min-h-[30%] movie-list-appearance'>

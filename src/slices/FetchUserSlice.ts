@@ -16,13 +16,21 @@ interface MarkFilmProps {
 	userID: string;
 }
 
+export interface DeleteMovieProps extends MarkFilmProps {
+	type: "fav" | "liked";
+	currentFilms: {
+		FavFilms: string[];
+		LikedFilms: string[];
+	};
+}
+
 interface UserAuth {
 	currentUser: [
 		{
-			id?: string | null;
-			email?: string | null;
-			favFilms?: [];
-			likedFilms?: [];
+			id: string;
+			email: string;
+			favFilms: string[];
+			likedFilms: string[];
 		},
 	];
 	errorMessage: string;
@@ -65,6 +73,8 @@ export const createUser = createAsyncThunk(
 				let userDetails = {
 					id: response.user.uid,
 					email: response.user.email || "EMAIL_ERROR",
+					favFilms: [],
+					likedFilms: [],
 				};
 				return userDetails;
 			}
@@ -83,7 +93,6 @@ export const readDB = createAsyncThunk(
 		try {
 			const currentUserDocRef = doc(db, "users", id);
 			const docSnap = await getDoc(currentUserDocRef);
-
 			if (docSnap.exists()) {
 				return docSnap.data();
 			} else {
@@ -99,7 +108,7 @@ export const readDB = createAsyncThunk(
 
 export const addLikedFilm = createAsyncThunk(
 	"userSlice/addLikedFilm",
-	async (settings: MarkFilmProps) => {
+	async (settings: MarkFilmProps, { rejectWithValue }) => {
 		try {
 			const currentUserDocRef = doc(db, "users", settings.userID);
 			const docSnap = await getDoc(currentUserDocRef);
@@ -108,17 +117,60 @@ export const addLikedFilm = createAsyncThunk(
 					...docSnap.data(),
 					LikedFilms: [...docSnap.data().LikedFilms, settings.filmID],
 				});
-				return settings.filmID;
 			} else {
 				console.log("Films have not been added.");
 			}
-		} catch (error) {}
+		} catch (error) {
+			rejectWithValue(error);
+		}
+	},
+);
+
+export const deleteMovieFrom = createAsyncThunk(
+	"userSlice/deleteMovieFrom",
+	async (settings: DeleteMovieProps) => {
+		const currentUserDocRef = doc(db, "users", settings.userID);
+		const docSnap = await getDoc(currentUserDocRef);
+		if (settings.type === "fav") {
+			const tempFavArray = settings.currentFilms.FavFilms.filter(
+				(i) => i !== settings.filmID,
+			);
+			try {
+				if (docSnap.exists()) {
+					setDoc(doc(usersRef, settings.userID), {
+						...docSnap.data(),
+						FavFilms: tempFavArray,
+					});
+				}
+				const upToDateSnap = await getDoc(currentUserDocRef);
+				return upToDateSnap.data();
+			} catch (error) {
+				console.log("Liked film was not deleted");
+			}
+		}
+		if (settings.type === "liked") {
+			const tempLikedArray = settings.currentFilms.LikedFilms.filter(
+				(i) => i !== settings.filmID,
+			);
+			try {
+				if (docSnap.exists()) {
+					setDoc(doc(usersRef, settings.userID), {
+						...docSnap.data(),
+						LikedFilms: tempLikedArray,
+					});
+				}
+				const upToDateSnap = await getDoc(currentUserDocRef);
+				return upToDateSnap.data();
+			} catch (error) {
+				console.log("Liked film was not deleted");
+			}
+		}
 	},
 );
 
 export const addFavFilm = createAsyncThunk(
 	"userSlice/addFavFilm",
-	async (settings: MarkFilmProps) => {
+	async (settings: MarkFilmProps, { rejectWithValue }) => {
 		try {
 			const currentUserDocRef = doc(db, "users", settings.userID);
 			const docSnap = await getDoc(currentUserDocRef);
@@ -127,11 +179,12 @@ export const addFavFilm = createAsyncThunk(
 					...docSnap.data(),
 					FavFilms: [...docSnap.data().FavFilms, settings.filmID],
 				});
-				return settings.filmID;
 			} else {
 				console.log("Films have not been added.");
 			}
-		} catch (error) {}
+		} catch (error) {
+			rejectWithValue(error);
+		}
 	},
 );
 
@@ -143,8 +196,8 @@ const initialState: UserAuth = {
 		{
 			id: parsedUser.id || "",
 			email: parsedUser.email || "",
-			favFilms: parsedUser.favFilms || "",
-			likedFilms: parsedUser.likedFilms || "",
+			favFilms: parsedUser.favFilms || [],
+			likedFilms: parsedUser.likedFilms || [],
 		},
 	],
 	errorMessage: "",
@@ -156,14 +209,24 @@ export const userSlice = createSlice({
 	reducers: {
 		SignOutUser: (state) => {
 			localStorage.removeItem("currentUser");
-			state.currentUser[0] = {};
+			state.currentUser[0] = {
+				id: "",
+				email: "",
+				favFilms: [],
+				likedFilms: [],
+			};
 		},
 	},
 	extraReducers(builder) {
 		builder
 			.addCase(loginUser.fulfilled, (state, action) => {
 				if (action.payload) {
-					state.currentUser[0] = action.payload;
+					state.errorMessage = "";
+					state.currentUser[0] = {
+						...state.currentUser[0],
+						id: action.payload.id,
+						email: action.payload.email,
+					};
 					if (!localStorage.getItem("currentUser")) {
 						localStorage.setItem(
 							"currentUser",
@@ -173,7 +236,7 @@ export const userSlice = createSlice({
 				}
 			})
 
-			.addCase(loginUser.pending, (state, action) => {
+			.addCase(loginUser.pending, () => {
 				console.log("Loading...");
 			})
 			.addCase(loginUser.rejected, (state, action) => {
@@ -186,23 +249,34 @@ export const userSlice = createSlice({
 							state.errorMessage = "Please enter the password.";
 							break;
 						case "auth/invalid-credential":
-							state.errorMessage = "The password is incorrect.";
+							state.errorMessage = "Credentials error. Please try again.";
 							break;
 						case "auth/too-many-requests":
 							state.errorMessage = "Too many requests. Please try later.";
 							break;
 						default:
-							state.errorMessage = action.payload;
+							state.errorMessage = "Credentials error.";
 							break;
 					}
 				}
 			})
 			.addCase(createUser.fulfilled, (state, action) => {
 				if (action.payload) {
-					state.currentUser[0] = action.payload;
+					state.errorMessage = "";
+					state.currentUser[0] = {
+						...state.currentUser[0],
+						id: action.payload.id,
+						email: action.payload.email,
+					};
+				}
+				if (!localStorage.getItem("currentUser")) {
+					localStorage.setItem(
+						"currentUser",
+						JSON.stringify(state.currentUser[0]),
+					);
 				}
 			})
-			.addCase(createUser.pending, (state, action) => {
+			.addCase(createUser.pending, () => {
 				console.log("Loading...");
 			})
 			.addCase(createUser.rejected, (state, action) => {
@@ -218,13 +292,17 @@ export const userSlice = createSlice({
 					JSON.stringify(state.currentUser[0]),
 				);
 			})
-			.addCase(addFavFilm.fulfilled, (state, action) => {
-				//@ts-ignore
-				state.currentUser[0].favFilms?.push(action.payload);
-			})
-			.addCase(addLikedFilm.fulfilled, (state, action) => {
-				//@ts-ignore
-				state.currentUser[0].likedFilms?.push(action.payload);
+			.addCase(deleteMovieFrom.fulfilled, (state, action) => {
+				if (action.payload) {
+					if (action.payload!.FavFilms.length === 0) {
+						state.currentUser[0].favFilms = [];
+					}
+					if (action.payload!.LikedFilms.length === 0) {
+						state.currentUser[0].likedFilms = [];
+					}
+					state.currentUser[0].favFilms = action.payload!.FavFilms;
+					state.currentUser[0].likedFilms = action.payload!.LikedFilms;
+				}
 			});
 	},
 });
