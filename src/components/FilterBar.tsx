@@ -17,7 +17,6 @@ const FilterBar = () => {
 	const movies = useAppSelector((store) => store.movieSlice.movies);
 	const filterValues = useAppSelector((store) => store.movieSlice.filterValues);
 
-	const modal = useAppSelector((store) => store.movieSlice.ModalSettings);
 	const navigate = useNavigate();
 
 	const dispatch = useAppDispatch();
