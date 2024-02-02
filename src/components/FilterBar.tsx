@@ -58,9 +58,7 @@ const FilterBar = () => {
 	} else {
 		return (
 			<div
-				className={`flex flex-col justify-center items-center h-[100%] transition-all ease-in-out duration-700 focus-within:opacity-100 ${
-					modal.opened ? `z-0` : `z-50`
-				}`}
+				className={`flex flex-col justify-center items-center h-[100%] transition-all ease-in-out duration-700 focus-within:opacity-100 z-0`}
 				id='form-id'>
 				<form
 					id='form-item'
