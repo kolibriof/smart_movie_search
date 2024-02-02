@@ -5,9 +5,9 @@ import {
 	deleteMovieFrom,
 	readDB,
 } from "../../slices/FetchUserSlice";
-import { HeaderContext } from "../../context/HeaderContext";
+import { HeaderContext } from "../../context/AppContext";
 import { nanoid } from "nanoid";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 
 interface MarkedMoviesProps {
 	movies: any[];
@@ -49,7 +49,7 @@ const MarkedMovies: React.FC<MarkedMoviesProps> = ({ movies, type }) => {
 			{movies.map((i: any) => {
 				return (
 					<motion.div
-						className='flex flex-col bg-white p-3 max-w-[90%] rounded-md border-black border-4 border-opacity-5 drop-shadow-2xl'
+						className='flex flex-col bg-white p-3 max-w-[90%] rounded-sm border-black border-4 border-opacity-5 drop-shadow-2xl'
 						key={nanoid(6)}>
 						<div
 							className='absolute right-0 top-0 cursor-pointer bg-red-500 rounded-full p-1 shadow-lg hover:drop-shadow-xl transition-all duration-150 hover:scale-105 ease-out '
@@ -63,7 +63,7 @@ const MarkedMovies: React.FC<MarkedMoviesProps> = ({ movies, type }) => {
 
 						<div className='img flex items-center justify-center flex-grow border-solid border-red-500 '>
 							<img
-								className='max-w-[80%] drop-shadow-lg '
+								className='max-w-[80%] shadow-2xl'
 								src={
 									i.primaryImage
 										? i.primaryImage.url

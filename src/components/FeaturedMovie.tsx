@@ -2,8 +2,10 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useAppSelector } from "../hooks";
 import { useEffect, useState } from "react";
 import { nanoid } from "nanoid";
+import { useNavigate } from "react-router";
 
 const FeaturedMovie = () => {
+	const navigate = useNavigate();
 	const movies = useAppSelector((store) => store.movieSlice.movies);
 	const [featuredMovie, setFeaturedMovie] = useState<any>(randomTitle());
 
@@ -55,7 +57,6 @@ const FeaturedMovie = () => {
 						className='rounded-md border-[12px] border-solid border-white border-opacity-10'
 					/>
 				</motion.div>
-
 				<motion.div
 					key={nanoid(5)}
 					className='flex w-1/2 items-center flex-col featured-movie-description '

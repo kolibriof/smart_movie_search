@@ -1,20 +1,32 @@
-import FilterBar from "./components/FilterBar";
 import "./index.css";
-import MovieList from "./components/MovieList";
-import { useAppSelector } from "./hooks";
-
-import FeaturedMovie from "./components/FeaturedMovie";
-import "./animations.css";
-import InformationComponent from "./components/InformationComponent";
+import { BrowserRouter } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import Header from "./components/Header";
+import ModalView from "./components/ModalView";
+import HeaderContextWrapper from "./context/AppContext";
+import ModalContextWrapper from "./context/ModalContext";
+import LocationProvider from "./components/helpers/LocationProvider";
+import RoutesWithAnimation from "./components/helpers/RoutesWithAnimation";
 
 const App = () => {
-	const movies = useAppSelector((store) => store.movieSlice.movies);
 	return (
 		<>
-			<FilterBar />
-			{movies[1 || 2 || 3].length >= 1 && <FeaturedMovie />}
-			{movies[1 || 2 || 3].length >= 1 && <MovieList />}
-			<InformationComponent />
+			<BrowserRouter>
+				<HeaderContextWrapper>
+					<section className='h-[100svh] items-center sm:overflow-scroll overflow-hidden flex flex-col gap-1'>
+						<ModalContextWrapper>
+							<Header />
+						</ModalContextWrapper>
+						<LocationProvider>
+							<RoutesWithAnimation />
+						</LocationProvider>
+						<ToastContainer />
+						<ModalContextWrapper>
+							<ModalView />
+						</ModalContextWrapper>
+					</section>
+				</HeaderContextWrapper>
+			</BrowserRouter>
 		</>
 	);
 };

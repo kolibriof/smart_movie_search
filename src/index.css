@@ -20,10 +20,6 @@ body {
 	);
 }
 
-.css-1jy569b-MuiFormLabel-root-MuiInputLabel-root.Mui-focused {
-	color: white !important;
-}
 input[type="text"] {
 	--tw-ring-color: "" !important;
-	color: white;
 }

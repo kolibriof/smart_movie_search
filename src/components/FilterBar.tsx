@@ -3,17 +3,22 @@ import { useMemo } from "react";
 import { Button } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { fetchMovies, setFilterValues } from "../slices/FetchMovieSlice";
-import { motion } from "framer-motion";
+
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
-import { nanoid } from "nanoid";
+
+import { useNavigate } from "react-router";
+import { toast } from "react-toastify";
 
 const FilterBar = () => {
 	const { genre, year } = useAppSelector(
 		(store) => store.movieSlice.filterValues,
 	);
 	const movies = useAppSelector((store) => store.movieSlice.movies);
+	const filterValues = useAppSelector((store) => store.movieSlice.filterValues);
+
 	const modal = useAppSelector((store) => store.movieSlice.ModalSettings);
+	const navigate = useNavigate();
 
 	const dispatch = useAppDispatch();
 	const movieYear = useMemo(() => {
@@ -28,27 +33,31 @@ const FilterBar = () => {
 		dispatch(setFilterValues({ type: type, value: i }));
 	};
 
-	const handleFetchMovies = (e: React.FormEvent<HTMLFormElement>) => {
+	const handleFetchMovies = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		let options = {
-			genre,
-			year,
-		};
-		const wrapper = document.getElementById("form-id")!;
-		const formEl = document.getElementById("form-item")!;
-		wrapper.classList.replace("h-[100%]", "h-[20%]");
-		wrapper.classList.add("opacity-50");
-		const form = formEl.childNodes;
-		//@ts-ignore
-		form.forEach((e) => e.blur());
-		dispatch(fetchMovies(options));
+
+		if (filterValues.genre && filterValues.year) {
+			let options = {
+				genre,
+				year,
+			};
+			const formEl = document.getElementById("form-item")!;
+			const form = formEl.childNodes;
+			//@ts-ignore
+			form.forEach((e) => e.blur());
+			const result = await dispatch(fetchMovies(options));
+			if (result) {
+				navigate("/searchedFilms");
+			}
+		} else {
+			toast.error("Please choose all the options!");
+		}
 	};
 	if (movies[1 || 2 || 3].length >= 1) {
 		return null;
 	} else {
 		return (
-			<motion.div
-				key={nanoid(5)}
+			<div
 				className={`flex flex-col justify-center items-center h-[100%] transition-all ease-in-out duration-700 focus-within:opacity-100 ${
 					modal.opened ? `z-0` : `z-50`
 				}`}
@@ -71,6 +80,9 @@ const FilterBar = () => {
 							"& .MuiOutlinedInput-notchedOutline": {
 								border: "none",
 							},
+							"& label.Mui-focused": {
+								color: "white",
+							},
 							"& .MuiFormLabel-root": {
 								color: "white",
 							},
@@ -84,7 +96,16 @@ const FilterBar = () => {
 						renderInput={(params) => (
 							<TextField
 								{...params}
-								label='Genres'
+								label={filterValues.genre}
+								sx={{
+									input: {
+										color: "white",
+										"&::placeholder": {
+											textOverflow: "ellipsis !important",
+											color: "white",
+										},
+									},
+								}}
 								className='text-white'
 								placeholder='Please choose a genre...'
 							/>
@@ -107,6 +128,10 @@ const FilterBar = () => {
 							"& .MuiFormLabel-root": {
 								color: "white",
 							},
+
+							"& label.Mui-focused": {
+								color: "white",
+							},
 							"& .MuiSvgIcon-root": {
 								color: "white",
 							},
@@ -117,8 +142,17 @@ const FilterBar = () => {
 						renderInput={(params) => (
 							<TextField
 								{...params}
-								label='Year'
-								placeholder='Please choose a genre...'
+								sx={{
+									input: {
+										color: "white",
+										"&::placeholder": {
+											textOverflow: "ellipsis !important",
+											color: "white",
+										},
+									},
+								}}
+								label={filterValues.year}
+								placeholder='Please choose a year...'
 							/>
 						)}
 					/>
@@ -141,7 +175,7 @@ const FilterBar = () => {
 						Search!
 					</Button>
 				</form>
-			</motion.div>
+			</div>
 		);
 	}
 };

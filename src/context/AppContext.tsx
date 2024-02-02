@@ -12,8 +12,6 @@ import { store } from "../store";
 import { toast } from "react-toastify";
 
 interface defaultContextProps {
-	isMenuOpen: boolean;
-	setIsMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
 	RefreshMarkedMovies: (del?: boolean) => void;
 	handleModal: (id: string) => void;
 	page: number;
@@ -23,8 +21,7 @@ interface defaultContextProps {
 const InitialProps: defaultContextProps = {
 	page: 1,
 	setPage: () => {},
-	isMenuOpen: false,
-	setIsMenuOpen: () => {},
+
 	RefreshMarkedMovies: () => {},
 	handleModal: () => {},
 };
@@ -36,7 +33,6 @@ const HeaderContextWrapper: React.FC<{ children: React.ReactNode }> = ({
 }) => {
 	const dispatch = useAppDispatch();
 	const { currentUser } = useAppSelector((store) => store.userSlice);
-	const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 	const RefreshMarkedMovies = async (del?: boolean) => {
 		if (del) {
 			let tempSettings: FetchMoviesProps = {
@@ -73,15 +69,12 @@ const HeaderContextWrapper: React.FC<{ children: React.ReactNode }> = ({
 				el!.style.pointerEvents = "none";
 			}
 			let tempSettings = { id: id, opened: true, page: page };
-			console.log(tempSettings);
 			dispatch(setModalSettings(tempSettings));
 		}
 	};
 	return (
 		<HeaderContext.Provider
 			value={{
-				isMenuOpen,
-				setIsMenuOpen,
 				RefreshMarkedMovies,
 				page,
 				setPage,

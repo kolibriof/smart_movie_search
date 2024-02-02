@@ -13,7 +13,7 @@ import {
 	readDB,
 } from "../slices/FetchUserSlice";
 import { AnimatePresence, motion } from "framer-motion";
-import { HeaderContext } from "../context/HeaderContext";
+import { modalContext } from "../context/ModalContext";
 
 const ModalView: any = () => {
 	const CheckForMarkedMovies = (type: "fav" | "liked", movieID: string) => {
@@ -31,7 +31,7 @@ const ModalView: any = () => {
 		}
 	};
 	Modal.setAppElement("#root");
-	const { setIsMenuOpen } = useContext(HeaderContext);
+	const { setIsMenuOpen } = useContext(modalContext);
 	const dispatch = useAppDispatch();
 	const { errorMessage, currentUser } = useAppSelector(
 		(store) => store.userSlice,
@@ -299,14 +299,24 @@ const ModalView: any = () => {
 								}}
 								label='Email'
 								sx={{
-									"& .MuiOutlinedInput-root": {
-										"& fieldset": {
-											borderColor: "black",
-											color: "black",
-										},
+									"& label": {
+										position: "absolute !important",
+										left: "0 !important",
+										top: "0 !important",
+										transition: "0.5s ease !important",
 									},
-									"& .MuiInputBase-input": {
+									"& label.Mui-focused": {
 										color: "black",
+										fontWeight: "600",
+										top: "50px !important",
+										left: "-20px !important",
+										transform: "rotate(270deg)",
+										transition: "0.5s ease !important",
+									},
+									border: "1px solid black",
+									borderRadius: "4px",
+									"& .MuiOutlinedInput-notchedOutline": {
+										border: "none",
 									},
 								}}
 							/>
@@ -314,6 +324,31 @@ const ModalView: any = () => {
 								variant='outlined'
 								label='Password'
 								type='password'
+								sx={{
+									"& label": {
+										position: "absolute !important",
+										left: "0 !important",
+										top: "0 !important",
+										transition: "0.5s ease !important",
+									},
+									"& label.Mui-focused": {
+										color: "black",
+										fontSize: "11px",
+										fontWeight: "600",
+										top: "55px !important",
+										left: "-16px !important",
+										transform: "rotate(270deg)",
+										transition: "0.5s ease !important",
+									},
+									"& input.Mui-focused": {
+										outline: "none",
+									},
+									border: "1px solid black",
+									borderRadius: "4px",
+									"& .MuiOutlinedInput-notchedOutline": {
+										border: "none",
+									},
+								}}
 								value={authUser.password}
 								onChange={(e) => {
 									setAuthUser({ ...authUser, password: e.target.value });
@@ -323,7 +358,7 @@ const ModalView: any = () => {
 								{ModalSettings.id === "signup" ? "Create account" : "Log in"}
 							</Button>
 						</form>
-						<AnimatePresence mode='wait'>
+						<AnimatePresence>
 							{errorMessage && (
 								<motion.div
 									className='flex justify-center items-center text-red-500 font-semibold'

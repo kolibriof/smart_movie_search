@@ -4,14 +4,14 @@ import { useContext } from "react";
 
 import Buttons from "./Buttons";
 import { nanoid } from "nanoid";
-import { HeaderContext } from "../context/HeaderContext";
+import { HeaderContext } from "../context/AppContext";
 
 const MovieList = () => {
 	const movies = useAppSelector((store) => store.movieSlice.movies);
 	const { handleModal, page, setPage } = useContext(HeaderContext);
 
 	return (
-		<motion.section className='flex flex-col items-center w-[100%] h-[100%] justify-end min-h-[30%] movie-list-appearance'>
+		<motion.section className='flex flex-col items-center w-[100%] h-[100%] justify-end min-h-[30%] '>
 			<AnimatePresence mode='wait'>
 				<motion.div
 					key={nanoid(5)}
